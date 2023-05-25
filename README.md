@@ -25,4 +25,5 @@ scanf("%s %d %f",e.name,&e.id,&e.salary);
                 
 printf("\nEmployee-name | ID | salary ");
 printf("\n%-14s %-5d %-9f", e.name, e.id,e.salary);
+
 }
