@@ -1,0 +1,191 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    int date;
+    int month;
+    int year;
+    int units;
+    float bill;
+    float tax;
+    float surcharge;
+    float totalBill;
+} Bill;
+
+
+int main() {
+	char ch;
+	int isdigit;
+    int year, month, date;
+    int units;
+    float totalBill, surcharge, tax, bill, unitPerDay;
+
+    printf("     WELCOME TO ELECTRICITY BILL CALCULATOR\n");
+    printf("*************************************************\n\n");
+    printf("ELECTRICITY BOARD RATE CHART (Rates/Unit):\n\n");
+    printf("*************************************************\n");
+    printf("* 0 to 50     Units = Rs 1/Unit                 *\n\n");
+    printf("* 51 to 100   Units = Rs 1.5/Unit               *\n\n");
+    printf("* 101 to 150  Units = Rs 2.5/Unit               *\n\n");
+    printf("* 151 to 200  Units = Rs 3.5/Unit               *\n\n");
+    printf("* 200 to 250  Units = Rs 5.0/Unit               *\n\n");
+    printf("* Above  250  units = Rs 7.0/Unit		*\n");
+    printf("*************************************************\n\n");
+
+
+	
+    printf("\nEnter the year: ");
+    scanf("%d", &year);
+ 	if(year==0){
+    printf("\nplease enter vaild inputs.");
+    	exit(0);}
+    printf("\nEnter the month: ");
+    scanf("%d", &month);
+	if(month==0){
+    printf("\nplease enter vaild inputs.");
+    	exit(0);}
+    printf("\nEnter the date: ");
+    scanf("%d", &date);
+	if(date==0){
+    printf("\nplease enter vaild inputs.");
+    	exit(0);}
+    printf("\nEnter total units consumed: ");
+    scanf("%d", &units);
+    if(units==0){
+    printf("\nplease enter vaild inputs.");
+    	exit(0);
+}
+
+    if (units <= 50) {
+        bill = units * 1.0;
+    } else if (units <= 100) {
+        bill = 50 * 1.0 + (units - 50) * 1.5;
+    } else if (units <= 150) {
+        bill = 50 * 1.0 + 50 * 1.5 + (units - 100) * 2.5;
+    } else if (units <= 200) {
+        bill = 50 * 1.0 + 50 * 1.5 + 50 * 2.5 + (units - 150) * 3.5;
+    } else if (units <= 250) {
+        bill = 50 * 1.0 + 50 * 1.5 + 50 * 2.5 + 50 * 3.5 + (units - 200) * 5.0;
+    } else {
+        bill = units * 7.0;
+    }
+
+
+    unitPerDay = units / 28;
+    tax = bill * 0.2;
+    surcharge = bill + 50;
+    totalBill = bill + tax + surcharge;
+
+    printf("\nUnits per day            : Rs %.2f\n", unitPerDay);
+    printf("ENERGY CHARGES    	 : Rs %.2f\n", bill);
+    printf("CUST CHARGES      	 : Rs %.2f\n", tax);
+    printf("FIXED CHARGES	       	 : Rs %.2f\n", surcharge);
+    printf("..................................................\n");
+    printf("\tNET AMOUNT : Rs %.2f\t\t\n", totalBill);
+    printf("\tARREARS    : Rs 0.00       ");
+    printf("\n--------------------------------------------------\n");
+    printf("|\tNET AMOUNT : Rs %.2f\t\t|\n", totalBill);
+    printf("--------------------------------------------------\n");
+
+
+void printAllBills(Bill *bills, int numBills){
+
+
+ 
+    printf("\nBILL DETAILS\n");
+    printf("--------------------------------------------------\n");
+    for (int i = 0; i < numBills; i++) {
+        printf("Date: %02d/%02d/%d\n", bills[i].date, bills[i].month, bills[i].year);
+        printf("Units: %d\n", bills[i].units);
+        printf("Bill: Rs %.2f\n", bills[i].bill);
+        printf("Tax: Rs %.2f\n", bills[i].tax);
+        printf("Surcharge: Rs %.2f\n", bills[i].surcharge);
+        printf("-----------------------\n");
+        printf("Total Bill: Rs %.2f\n", bills[i].totalBill);
+        printf("-----------------------\n");
+    }
+    printf("--------------------------------------------------\n");
+}
+
+void clearAllBills() {
+    FILE *file = fopen("bills.txt", "w");
+    if (file == NULL) {
+        printf("Error opening the file.\n");
+        return;
+    }
+    fclose(file);
+}
+
+int compareBills(const void *a, const void *b) {
+    const Bill *bill1 = (const Bill *)a;
+    const Bill *bill2 = (const Bill *)b;
+    // Compare year
+    if (bill1->year != bill2->year) {
+        return bill1->year - bill2->year;
+    }
+    // Compare month
+    if (bill1->month != bill2->month) {
+        return bill1->month - bill2->month;
+    }
+    // Compare date
+    return bill1->date - bill2->date;
+}
+
+
+    FILE *file = fopen("bills.txt", "a");
+    if (file == NULL) {
+        printf("Error opening the file.\n");
+        return 1;
+    }
+
+    fprintf(file, "Date: %02d/%02d/%d\n", date, month, year);
+    fprintf(file, "```````````````````````\n");
+    fprintf(file, "Units     : %d\n", units);
+    fprintf(file, "Bill      : Rs %.2f\n", bill);
+    fprintf(file, "Tax       : Rs %.2f\n", tax);
+    fprintf(file, "Surcharge : Rs %.2f\n", surcharge);
+    fprintf(file, "-----------------------\n");
+    fprintf(file, "Total Bill: Rs %.2f\n", totalBill);
+    fprintf(file, "-----------------------\n\n");
+
+    fclose(file);
+
+    // Prompt to print the bill details
+    char printOption;
+    printf("\nDo you want to print the bill details? (y/n): ");
+    scanf(" %c", &printOption);
+
+    if (printOption == 'y' || printOption == 'Y') {
+        file = fopen("bills.txt", "r");
+        if (file == NULL) {
+            printf("Error opening the file.\n");
+            return 1;
+        }
+
+        char ch;
+        printf("\nBILL DETAILS\n");
+        printf("--------------------------------------------------\n");
+        while ((ch = fgetc(file)) != EOF) {
+            printf("%c", ch);
+        }
+        printf("--------------------------------------------------\n");
+
+        fclose(file);
+    }
+    else {
+    	exit(0);
+	}
+
+    // Prompt to clear the bill details
+    char clearOption;
+    printf("\nDo you want to clear the bill details? (y/n): ");
+    scanf(" %c", &clearOption);
+
+    if (clearOption == 'y' || clearOption == 'Y') {
+        clearAllBills();
+        printf("Bill details cleared successfully.\n");
+    }
+
+    return 0;
+}
